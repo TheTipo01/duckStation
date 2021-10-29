@@ -1,0 +1,8 @@
+# Duck DNS token
+token: ""
+# Duck DNS domain name
+domain: ""
+# Endpoint for the JSON file with the IP. You might need to only change the IP of the router
+endpoint: "http://192.168.1.1/data/user_lang.json"
+# How often to check for a new IP
+timeout: "15s"

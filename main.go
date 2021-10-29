@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Config holds data from the config.yml
 type Config struct {
 	Token    string        `fig:"token" validate:"required"`
 	Endpoint string        `fig:"endpoint" validate:"required"`
@@ -17,12 +18,13 @@ type Config struct {
 	Timeout  time.Duration `fig:"timeout" validate:"required"`
 }
 
+// UserLang is the dumb structure used to unmarshall the request from the router
 type UserLang struct {
-	WanIp4Addr        string `json:"wan_ip4_addr"`
+	WanIP4Addr string `json:"wan_ip4_addr"`
 }
 
 var (
-	cfg   Config
+	cfg      Config
 	replacer = strings.NewReplacer("[", "{", "]", "}", "{", "", "}", "")
 )
 
@@ -35,13 +37,13 @@ func init() {
 }
 
 func main() {
-	var ip, newIp string
+	var ip, newIP string
 
 	for {
-		newIp = getIP()
-		if newIp != ip {
-			ip = newIp
-			updateDuckDNS(ip)
+		newIP = getIP()
+		if newIP != ip {
+			ip = newIP
+			updateDuckDNS(&ip)
 		}
 
 		time.Sleep(cfg.Timeout)
@@ -68,15 +70,15 @@ func getIP() string {
 	// The JSON is given to us in an array. We parse that and remove the brackets, and add them only at the end
 	_ = json.Unmarshal([]byte(replacer.Replace(string(b))), &out)
 
-	return out.WanIp4Addr
+	return out.WanIP4Addr
 }
 
 // Updated the IP with the given one
-func updateDuckDNS(ip string) {
-	_, err := http.Get("https://www.duckdns.org/update?domains=" + cfg.Domain + "&token=" + cfg.Token + "&ip=" + ip)
+func updateDuckDNS(ip *string) {
+	_, err := http.Get("https://www.duckdns.org/update?domains=" + cfg.Domain + "&token=" + cfg.Token + "&ip=" + *ip)
 	if err != nil {
 		log.Println("Error while updating Duck DNS: " + err.Error())
 		// Doing so forces another updateDuckDNS
-		ip = ""
+		*ip = ""
 	}
 }

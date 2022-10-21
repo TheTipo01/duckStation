@@ -1,8 +1,18 @@
-# Duck DNS token
-token: ""
-# Duck DNS domain name
-domain: ""
+# Global
+loglevel: debug
+timeout: 15s
+
 # Endpoint for the JSON file with the IP. You might need to only change the IP of the router
-endpoint: "http://192.168.1.1/data/user_lang.json"
-# How often to check for a new IP
-timeout: "15s"
+endpoint: http://192.168.1.1/data/user_lang.json
+
+# Cloudflare specific
+# Get your token from https://dash.cloudflare.com/profile/api-tokens (you only need the "Zone:DNS:Edit" permission)
+cf_token:
+zone_id:
+zones:
+  - example.com
+  - subdomain.example.com
+
+# DuckDNS specific
+dd_domain:
+dd_token:

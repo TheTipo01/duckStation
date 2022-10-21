@@ -1,4 +1,4 @@
-module cloudflareDDNS
+module duckStation
 
 go 1.19
 

@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/bwmarrin/lit"
-	"log"
 	"net/http"
 )
 
@@ -10,7 +9,7 @@ import (
 func updateDuckDNS(ip string) {
 	_, err := http.Get("https://www.duckdns.org/update?domains=" + cfg.DDDomain + "&token=" + cfg.DDToken + "&ip=" + ip)
 	if err != nil {
-		log.Println("Error while updating DuckDNS: " + err.Error())
+		lit.Error("Error while updating DuckDNS: " + err.Error())
 		errorFlag = true
 	}
 

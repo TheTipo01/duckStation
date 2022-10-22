@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/bwmarrin/lit"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -21,7 +21,7 @@ func getIP() string {
 	req.Header.Set("Accept-Language", "it-IT")
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Error while requesting ip: " + err.Error())
+		lit.Error("Error while requesting ip: " + err.Error())
 		return ""
 	}
 
@@ -38,7 +38,7 @@ func getIP() string {
 func writeIP(ip string) {
 	err := os.WriteFile("lastip", []byte(ip), 0644)
 	if err != nil {
-		log.Println("Error while writing lastip: " + err.Error())
+		lit.Error("Error while writing lastip: " + err.Error())
 	}
 }
 
@@ -46,7 +46,7 @@ func writeIP(ip string) {
 func readIP() string {
 	b, err := os.ReadFile("lastip")
 	if err != nil {
-		log.Println("Error while reading lastip: " + err.Error())
+		lit.Error("Error while reading lastip: " + err.Error())
 		return ""
 	}
 

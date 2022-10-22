@@ -6,26 +6,28 @@ import (
 	"net/http"
 )
 
-// Updated the IP with the given one
-func updateDuckDNS(ip string) error {
+// Updates DuckDNS
+func updateDuckDNS(ip string) {
 	_, err := http.Get("https://www.duckdns.org/update?domains=" + cfg.DDDomain + "&token=" + cfg.DDToken + "&ip=" + ip)
 	if err != nil {
 		log.Println("Error while updating DuckDNS: " + err.Error())
-		return err
+		errorFlag = true
 	}
 
-	return nil
+	wg.Done()
 }
 
-func updateDNSZones(ip string) (err error) {
+// Updates Cloudflare given zones
+func updateDNSZones(ip string) {
 	for _, r := range records {
 		r.Content = ip
 
-		err = api.UpdateDNSRecord(ctx, cfg.ZoneID, r.ID, r)
+		err := api.UpdateDNSRecord(ctx, cfg.ZoneID, r.ID, r)
 		if err != nil {
 			lit.Error("Error while updating DNS record " + r.Name + ": " + err.Error())
+			errorFlag = true
 		}
 	}
 
-	return err
+	wg.Done()
 }

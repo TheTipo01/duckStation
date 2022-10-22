@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -31,4 +32,29 @@ func getIP() string {
 	_ = json.Unmarshal([]byte(replacer.Replace(string(b))), &out)
 
 	return out.WanIP4Addr
+}
+
+// Overwrite the file lastip with the given IP
+func writeIP(ip string) {
+	err := os.WriteFile("lastip", []byte(ip), 0644)
+	if err != nil {
+		log.Println("Error while writing lastip: " + err.Error())
+	}
+}
+
+// Read the file lastip and return its content
+func readIP() string {
+	b, err := os.ReadFile("lastip")
+	if err != nil {
+		log.Println("Error while reading lastip: " + err.Error())
+		return ""
+	}
+
+	return string(b)
+}
+
+// Returns true if the given file exists
+func fileExists(file string) bool {
+	_, err := os.Stat(file)
+	return !os.IsNotExist(err)
 }

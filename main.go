@@ -6,15 +6,18 @@ import (
 	"github.com/cloudflare/cloudflare-go"
 	"github.com/kkyr/fig"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
-	cfg     Config
-	zones   map[string]bool
-	records []cloudflare.DNSRecord
-	api     *cloudflare.API
-	ctx     = context.Background()
+	cfg       Config
+	zones     map[string]bool
+	records   []cloudflare.DNSRecord
+	api       *cloudflare.API
+	ctx       = context.Background()
+	errorFlag bool
+	wg        sync.WaitGroup
 )
 
 func init() {
@@ -40,6 +43,11 @@ func init() {
 	for _, zone := range cfg.Zones {
 		zones[zone] = true
 	}
+
+	// Create the file lastip if it doesn't exist
+	if !fileExists("lastip") {
+		writeIP("")
+	}
 }
 
 func main() {
@@ -61,16 +69,27 @@ func main() {
 		}
 	}
 
+	// Reads the last saved ip
+	ip = readIP()
+
 	// Main loop: checks for a new ip change every cfg.Timeout
 	for {
 		newIP = getIP()
+
 		if newIP != ip {
-			ip = newIP
-			err = updateDuckDNS(ip)
-			err = updateDNSZones(ip)
-			// Force an ip update
-			if err != nil {
-				ip = ""
+			lit.Info("IP changed from " + ip + " to " + newIP)
+
+			wg.Add(2)
+			go updateDuckDNS(newIP)
+			go updateDNSZones(newIP)
+			wg.Wait()
+
+			// If we don't get any errors, we save the new ip
+			if !errorFlag {
+				ip = newIP
+				writeIP(newIP)
+			} else {
+				errorFlag = false
 			}
 		}
 

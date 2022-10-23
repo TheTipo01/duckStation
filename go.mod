@@ -1,4 +1,4 @@
-module duckStation
+module github.com/TheTipo01/duckStation
 
 go 1.19
 

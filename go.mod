@@ -16,7 +16,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	golang.org/x/net v0.2.0 // indirect
-	golang.org/x/text v0.4.0 // indirect
-	golang.org/x/time v0.2.0 // indirect
+	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

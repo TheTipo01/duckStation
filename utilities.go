@@ -9,29 +9,28 @@ import (
 	"strings"
 )
 
-func getIP() string {
+func getIP() (string, error) {
 	var (
 		out      StationJSON
 		replacer = strings.NewReplacer("[", "{", "]", "}", "{", "", "}", "")
 	)
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", cfg.Endpoint, nil)
+	req, err := http.NewRequest("GET", cfg.Endpoint, nil)
 	// Add Accept-Language header, otherwise the modem will throw bad requests at us
 	req.Header.Set("Accept-Language", "it-IT")
 	resp, err := client.Do(req)
 	if err != nil {
-		lit.Error("Error while requesting ip: " + err.Error())
-		return ""
+		return "", err
 	}
 
-	b, _ := io.ReadAll(resp.Body)
-	_ = resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	err = resp.Body.Close()
 
 	// The JSON is given to us in an array. We parse that and remove the brackets, and add them only at the end
-	_ = json.Unmarshal([]byte(replacer.Replace(string(b))), &out)
+	err = json.Unmarshal([]byte(replacer.Replace(string(b))), &out)
 
-	return out.WanIP4Addr
+	return out.WanIP4Addr, nil
 }
 
 // Overwrite the file lastip with the given IP

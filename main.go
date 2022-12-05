@@ -74,9 +74,9 @@ func main() {
 
 	// Main loop: checks for a new ip change every cfg.Timeout
 	for {
-		newIP = getIP()
+		newIP, err = getIP()
 
-		if newIP != ip {
+		if err == nil && newIP != ip {
 			lit.Info("IP changed from " + ip + " to " + newIP)
 
 			wg.Add(2)
